@@ -29,7 +29,6 @@ export default {
      * @argument address address of the dweller to get from the cache
      */
     async getDweller(address) {
-      console.log('getting dweller for ', address);
       this.dweller = await this.dwellerCachingHelper.getDweller(address);
     },
     /** @method
