@@ -74,14 +74,6 @@ export default {
     }
   },
   methods: {
-    /** @method
-     * Setter
-     * @name getDweller
-     * @argument address address of the dweller to get from the cache
-     */
-    // async getDweller(address) {
-    //   this.dweller = await this.dwellerCachingHelper.getDweller(address);
-    // },
     dataURItoBlob(dataURI) {
       // convert base64 to raw binary data held in a string
       // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
