@@ -12,14 +12,14 @@ Decentralized chat & sharing platform
 You must install [Node.JS](https://nodejs.org/en/download/) on your system prior to running the application.
 
 **Update Submodules**
-`git submodule update --init --recursive`
+`npm run init` or `yarn run init`
 
 **Install Deps.**
 `yarn` or `npm install`
 
 **Build Contracts**
-Install Truffle `npm i -g truffle`
-Build Contracts `cd src/contracts && truffle build`
+Install Truffle `npm i -g truffle` or `yarn global add truffle`
+Build Contracts `npm run truffle` or `yarn truffle`
 
 **Start in Devmode**
 `yarn dev` or `npm run dev`
