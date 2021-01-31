@@ -19,7 +19,7 @@
   "license": "CC-BY-NC",
   "scripts": {
     "prepush": "npm run eslint",
-    "dev": "npm run init && node build/dev-server.js",
+    "dev": "node build/dev-server.js",
     "init": "git submodule update --init --recursive",
     "truffle": "cd src/contracts && truffle build && cd ../..",
     "electron": "electron .",

@@ -76,7 +76,7 @@ devMiddleware.waitUntilValid(() => {
   // eslint-disable-next-line no-console
   console.log(`> Listening at ${uri}\n`);
   // when env is testing, don't need open it
-  if (autoOpenBrowser && process.env.NODE_ENV !== 'testing') {
+  if (autoOpenBrowser && process.env.NODE_ENV !== 'testing' && !process.env.IN_DOCKER) {
     opn(uri);
   }
   _resolve();

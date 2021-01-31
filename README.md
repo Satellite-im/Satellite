@@ -7,7 +7,15 @@ Decentralized chat & sharing platform
 
 ![](https://c.gitcoin.co/docs/8d49c129c59c3431b4127f521993eae2/unknown.png)
 
-## Running Locally
+
+# Running Locally with Docker
+- install docker
+- clone repo down
+- run `docker build -t vault74 .` to build the docker image
+- run `docker run -p 8080:8080 -p 8081:8081 -p 443:443 vault74` to run the application. Go to localhost:8080 in your browser with Metamask installed
+
+
+# Running Locally Without Docker
 
 You must install [Node.JS](https://nodejs.org/en/download/) on your system prior to running the application. 
 
