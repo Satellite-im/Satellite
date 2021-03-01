@@ -1,4 +1,4 @@
-# Vault74
+# Satellite
 
 ![](https://ipfs.io/ipfs/QmW2Kbkx2APq8rmGDnGaMPZy4amTk4fzhrMiDq257h745J)
 
@@ -9,25 +9,25 @@ Decentralized chat & sharing platform
 
 
 # Running Locally with Docker
-- install docker
-- clone repo down
-- run `docker build -t vault74 .` to build the docker image
-- run `docker run -p 8080:8080 -p 8081:8081 -p 443:443 vault74` to run the application. Go to localhost:8080 in your browser with Metamask installed
+- Install [Docker](https://docs.docker.com/get-docker/)
+- Clone repository `git clone git@github.com:Satellite-im/Satellite.git`
+- run `docker build -t satellite .` to build the docker image.
+- run `docker run -p 8080:8080 -p 8081:8081 -p 443:443 satellite` to run the application. Go to localhost:8080 in your browser with Metamask installed.
 
 
 # Running Locally Without Docker
 
-You must install [Node.JS](https://nodejs.org/en/download/) on your system prior to running the application. 
+You must install [Node.JS](https://nodejs.org/en/download/) on your system prior to running the application.
 
 ### Textile.io Setup
-Because the application uses HMR it will refresh un-nessiarily so it is recommended to run Textile locally. 
+Because the application uses HMR it will refresh un-nessiarily so it is recommended to run Textile locally.
 You can use their Docker container which makes this very easy, information here: [Textile Docker](https://github.com/textileio/go-threads#running-threaddb).
 
 Alternativley you can simply create a key for Textile and include it in your config. Creating a Textile account and generating keys is explained here: [Textile Account](https://docs.textile.io/hub/accounts/)
 
 ### Creating the config
 
-You'll need to fill out a few things in the config, first create your config by running `cp src/config/config-example.js src/config/config.js`. 
+You'll need to fill out a few things in the config, first create your config by running `cp src/config/config-example.js src/config/config.js`.
 
 **Next enter the following information:**
 
@@ -53,7 +53,7 @@ Install Truffle `npm i -g truffle`
 
 Build Contracts `cd src/contracts && truffle build`
 
-### Running Vault
+### Running Satellite
 
 **Start in Devmode**
 
