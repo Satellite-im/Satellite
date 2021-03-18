@@ -1,5 +1,5 @@
 <template>
-  <div id="app" :class="this.$store.state.theme">
+  <div id="app" :class="{[this.$store.state.theme]: !['landing'].includes($route.name) || ! decrypted}">
     <div class="notification is-warning" v-if="showWarning">
       <button class="delete" v-on:click="hideWarning"></button>
       <span v-html="$t('alpha_release.warning')"></span>

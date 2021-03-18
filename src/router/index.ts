@@ -2,17 +2,24 @@ import Vue from 'vue';
 import Router from 'vue-router';
 // @ts-ignore
 import ChatComponent from '@/components/Chat';
+// @ts-ignore
+import LandingPage from '@/pages/Landing';
 
 Vue.use(Router);
 
 const router = new Router({
   mode: 'history',
-  base: window.location.pathname,
+  base: '/',
   routes: [
     {
       path: '/',
       name: 'home',
       component: ChatComponent,
+    },
+    {
+      path: '/landing',
+      name: 'landing',
+      component: LandingPage,
     },
     {
       path: '*',
