@@ -300,6 +300,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
 
   .main-area {
     width: 50%;
@@ -363,7 +364,8 @@ export default {
     width: unset;
   }
   .create-wallet-btn {
-    height: 53px;
+    height: 35px;
+    padding: 5px;
   }
 
   .account-img {
@@ -382,7 +384,7 @@ export default {
     .main-area {
       width: 100%;
       flex: 1;
-      padding: 50px;
+      padding: 15px;
 
       .recovery-phrase-container {
         margin-top: 50px;
