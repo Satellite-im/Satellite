@@ -364,8 +364,8 @@ export default {
     width: unset;
   }
   .create-wallet-btn {
-    height: 35px;
-    padding: 5px;
+    height: 53px;
+    // padding: 5px;
   }
 
   .account-img {
@@ -384,7 +384,7 @@ export default {
     .main-area {
       width: 100%;
       flex: 1;
-      padding: 15px;
+      padding: 50px;
 
       .recovery-phrase-container {
         margin-top: 50px;
@@ -403,6 +403,32 @@ export default {
         width: 80%;
       }
     }
+  }
+
+  @media (max-height: 700px) {
+    .account-img {
+      display: inline-block;
+      width: 70%;
+      margin: 0 auto;
+      // margin-bottom: 2rem;
+      // margin-top: 1rem;
+      background-color:#fff;
+    }
+    .main-area {
+      width: 100%;
+      flex: 1;
+      padding: 10px;
+    }
+    .create-wallet-btn {
+    height: 50px;
+    // padding: 5px;
+    }
+
+    b {
+      display: block;
+      margin: 1rem;
+    }
+
   }
 
   .mnemonic-container {
