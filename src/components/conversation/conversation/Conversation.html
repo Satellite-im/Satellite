@@ -22,6 +22,10 @@
         <i class="fas fa-key-skeleton"></i> &nbsp;
         {{ $t('conversation.encrypted') }}
       </div>
+      <div v-for="n in 50" v-if="loadingMore">
+        <div class="bar-small"></div>
+        <div class="bar-large"><div class="circle-load"></div></div>
+      </div>
       <div
         v-for="messageGroup in grouper($store.state.messages)"
         v-bind:key="messageGroup[0].id"

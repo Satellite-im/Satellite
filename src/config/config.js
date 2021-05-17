@@ -1,5 +1,8 @@
 module.exports = {
   env: 'prod',
+  cache: {
+    dwellerCacheKey: 'satellite.dwellerCache'
+  },
   textile: {
     localURI: 'http://localhost:6007',
     key: 'b3y2jgeqlvpqnxmwqsvvc4hc7ym',
@@ -43,12 +46,12 @@ module.exports = {
   registry: {
     mainnet: '0x0',
     goerli: '0xfA22498c3F2bc836d9347F2e8c718E7820eAb308',
-    mumbai: '0x26631E322280B34E44CEDe9Bf4513b3AD8040d48'
+    mumbai: '0x8DC0e6c9a996cb361DC3965e1E66Fd7248f9D641'
   },
   friends: {
     mainnet: '0x0',
     goerli: '0xd1d99a34Bdb6e2c3d199dd39Fe1B011Ee633D824',
-    mumbai: '0x7874124148DBAcC66647dc7545e15a684B0fE2d1'
+    mumbai: '0x3084d95eA328d6B613274d007e9B9d5DFE2503a2'
   },
   stickers: {
     mumbai: '0x090533F85d85713d913fd2B0bbaD7B04F7c3BA1a',
@@ -109,6 +112,10 @@ module.exports = {
     iconPack: 'fontawesome',
     duration: 800,
     className: 'vault-toast'
+  },
+  messaging: {
+    defaultLimit: 50,
+    loadMoreCount: 50
   },
   verified_addresses: ['0x2c3a050a6634cBD10df8086688De37D084440B7c'] // TODO: move this to a contract
 }

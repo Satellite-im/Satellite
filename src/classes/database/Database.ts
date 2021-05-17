@@ -1,6 +1,5 @@
 // @ts-ignore
-import { Identity } from '@textile/hub'
-import { Wallet } from 'ethers'
+import { Identity, PublicKey } from '@textile/hub'
 import Bucket from './Bucket'
 import BucketManager from './textile/BucketManager'
 import Drawer from './Drawer'
@@ -11,35 +10,32 @@ import { LocalStorage, ThreadDB } from './interpreters'
 import { MessageManager } from './MessageManager'
 import { SignalingManager } from '../webrtc/SignalingManager'
 import ThreadManager from './textile/ThreadManager'
+import IdentityManager from './textile/IdentityManager'
+import { publicKeyToString, publicKeyBytesFromString } from '@textile/crypto'
 
-interface Interface {
-  _retrieve: CallableFunction
-  _update: CallableFunction
-  _store: CallableFunction
-  _key: CallableFunction
-}
-
-interface Creds {
-  id: string
-  pass: string
-  extras: Extras
-}
-
-interface Extras {
-  client: any
-  wallet: Wallet
-}
+import {
+  Creds,
+  StorageInterface,
+  StorageInitializationData,
+  TextileConfig,
+  LocalStorageConfig,
+  Extras
+} from './Interfaces'
+import { MailboxManager } from './textile/MailboxManager'
 
 export default class Database {
   name: string
   prefix: string
   interface: any
   availableInterfaces: any[]
-  creds: Creds | undefined
+  creds: Creds | null
   threadManager: ThreadManager | null
   bucketManager: BucketManager | null
   messageManager: MessageManager | null
   signalingManager?: SignalingManager
+  identityManager: IdentityManager
+  threadDB: ThreadDB | null
+  mailboxManager: MailboxManager | null
 
   /** @constructor
    * Construct a Database
@@ -51,10 +47,60 @@ export default class Database {
     this.prefix = 'vdb.'
     this.interface
     this.availableInterfaces = [ThreadDB, LocalStorage]
+    this.identityManager = new IdentityManager()
+    this.threadDB = null
     this.threadManager = null
     this.bucketManager = null
     this.messageManager = null
-    this.creds = undefined
+    this.mailboxManager = null
+    this.creds = null
+  }
+
+  async init (
+    storageInterface: StorageInterface,
+    data: StorageInitializationData
+  ) {
+    if (storageInterface === 'textile') {
+      const { id, pass, wallet }: TextileConfig = data
+
+      if (!wallet) throw new Error('Wallet is mandatory for textile')
+
+      const identity = await this.identityManager.fromWallet(wallet)
+      const { client, users } = await this.identityManager.authorize(identity)
+
+      this.creds = {
+        id,
+        pass
+      }
+
+      const textile: Extras = {
+        identity,
+        client,
+        wallet,
+        users
+      }
+
+      this.interface = new ThreadDB(this.prefix, this.creds, textile)
+      this.threadManager = new ThreadManager('LocalStorage', client)
+      this.messageManager = new MessageManager(client, id)
+      this.signalingManager = new SignalingManager(client, id)
+      this.bucketManager = new BucketManager(identity, this.creds.id)
+      this.mailboxManager = new MailboxManager(
+        this.prefix,
+        textile,
+        wallet.address
+      )
+      await this.mailboxManager.init()
+
+      return
+    }
+
+    if (storageInterface === 'localStorage') {
+      const { id, pass }: LocalStorageConfig = data
+      this.creds = { id, pass }
+      this.interface = new LocalStorage(this.prefix, this.creds)
+      return
+    }
   }
 
   /**
@@ -72,8 +118,7 @@ export default class Database {
   ) {
     this.creds = {
       id,
-      pass,
-      extras
+      pass
     }
     switch (intrface) {
       case 'localStorage':

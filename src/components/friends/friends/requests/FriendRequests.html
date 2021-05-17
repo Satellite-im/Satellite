@@ -19,7 +19,7 @@
           <button
             :disabled="requestPending[request.address]"
             class="button is-primary"
-            v-on:click="acceptRequest(request.address)">
+            v-on:click="acceptRequest(request)">
             <i class="fas fa-check"></i>
           </button>
           <button

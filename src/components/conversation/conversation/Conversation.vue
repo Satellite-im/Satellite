@@ -23,30 +23,48 @@ export default {
   data () {
     return {
       showScrollToBottom: false,
-      scrollTimeout: false,
       subscribed: false,
       threadExists: false,
-      messageCount: this.$store.state.messages.length
+      messageCount: this.$store.state.messages.length,
+      prevScroll: 0,
+      loadingMore: false
     }
   },
-  updated () {
-    if (this.messageCount !== this.$store.state.messages.length) {
-      this.messageCount = this.$store.state.messages.length
-
-      setTimeout(() => this.scrollToEnd(), 200)
-    }
-  },
+  updated () {},
   methods: {
     grouper: MessageUtils.group,
     // Returns if user device is mobile
     isMobile: MobileUtils.isMobile,
-    doesThreadExist () {
-      const id = this.$database.threadManager.makeIdentifier(
-        this.$store.state.activeAccount,
-        this.$store.state.activeChat
-      )
-      const threadID = this.$database.threadManager.fetchThread(id)
-      return threadID
+    /**
+     * @method
+     * Scroll to a specific position
+     * @name scrollTo
+     */
+    scrollTo (height) {
+      const { chat } = this.$refs
+      if (!chat) return
+
+      setTimeout(() => {
+        chat.scrollTo({ top: height, behavior: 'smooth' })
+        this.checkScrollToBottom()
+      }, 50)
+    },
+    /**
+     * @method
+     * Checks if the scroll to bottom buttom must be shown or not
+     * @name checkScrollToBottom
+     */
+    checkScrollToBottom () {
+      const { chat } = this.$refs
+      if (!chat) return
+      // If the scroll position is at least 100 pixel from the bottom,
+      // shows the scrollToBottom button
+      const currentPosition = chat.scrollHeight - chat.scrollTop
+      if (currentPosition - chat.offsetHeight > 100) {
+        this.showScrollToBottom = true
+      } else {
+        this.showScrollToBottom = false
+      }
     },
     /** @method
      * Rudementary scrolling to the bottom of the
@@ -56,20 +74,36 @@ export default {
     scrollToEnd () {
       const { chat } = this.$refs
       if (!chat) return
-      setTimeout(() => {
-        chat.scrollTop = chat.scrollHeight
-        this.showScrollToBottom = false
-      }, 50)
+
+      this.scrollTo(chat.scrollHeight)
+    },
+    /**
+     * @method
+     * Set the initial scroll to the bottom to see the latest
+     * messages
+     * @name initialScroll
+     */
+    initialScroll () {
+      const { chat } = this.$refs
+      if (!chat) return
+
+      chat.scrollTop = chat.scrollHeight
     },
     /** @method
      * Scrolls to the end if the user isn't looking through message
      * history to prevent annoying jumping
      * @name scrollToEndConditionally
      */
-    scrollToEndConditionally () {
+    scrollToEndConditionally (newMessages) {
       const { chat } = this.$refs
       if (!chat) return
-      if (chat.scrollTop - chat.scrollHeight > -750) {
+
+      if (this.loadingMore) {
+        this.loadingMore = false
+        return
+      }
+
+      if (newMessages) {
         this.scrollToEnd()
       }
     },
@@ -81,11 +115,26 @@ export default {
     onScroll () {
       const { chat } = this.$refs
       if (!chat) return
-      if (chat.scrollTop - chat.scrollHeight < -750) {
-        this.showScrollToBottom = true
-      } else {
-        this.showScrollToBottom = false
+
+      const scrollPercentage = (chat.scrollTop / chat.scrollHeight) * 100
+
+      const scrollDirection = chat.scrollTop > this.prevScroll ? 'down' : 'up'
+
+      this.prevScroll = chat.scrollTop
+
+      if (
+        scrollPercentage < 50 &&
+        !this.loadingMore &&
+        !this.$store.state.messagesLimit.end &&
+        scrollDirection === 'up'
+      ) {
+        this.loadingMore = true
+        this.$store.dispatch('loadMoreMessages', {
+          address: this.$store.state.activeChat
+        })
       }
+
+      this.checkScrollToBottom()
     },
     markRead () {
       // If we get a message update the last read messages to mark it as read
@@ -96,15 +145,13 @@ export default {
     mediaOpen: 'scrollToEnd'
   },
   beforeDestroyed () {
-    clearTimeout(this.scrollTimeout)
     // Close subscription
     this.subscribed()
   },
   mounted () {
     // This is to track changes in addresses, I couldn't find a way to do this with subscribe
     let lastChat = this.$store.state.activeChat
-    this.$nextTick(() => this.scrollToEnd())
-    this.$store.subscribe(mutation => {
+    this.subscribed = this.$store.subscribe(mutation => {
       if (mutation.type === 'activeChat') {
         this.$nextTick(() => this.scrollToEnd())
         this.markRead()
@@ -114,29 +161,21 @@ export default {
         }
       }
       if (mutation.type === 'updateMessages') {
-        this.scrollToEndConditionally()
+        const newMessages =
+          this.messageCount !== mutation.payload.messages.length
+        this.messageCount = mutation.payload.messages.length
+
+        this.scrollToEndConditionally(newMessages)
         this.markRead()
       }
       if (mutation.type === 'appendMessage') {
-        this.scrollToEndConditionally()
+        this.scrollToEnd()
         this.markRead()
       }
     })
-    // Watch for threads, this can be removed in the future
-    // when thread IDs are persistent
-    const checkThread = () => {
-      if (!this.doesThreadExist()) {
-        this.threadExists = false
-        setTimeout(() => {
-          checkThread()
-        }, 3000)
-      } else {
-        this.threadExists = true
-      }
-    }
-    checkThread()
+
     //scrolls chat to the bottom upon opening chat
-    this.scrollToEnd()
+    setTimeout(() => this.initialScroll(), 50)
   }
 }
 </script>

@@ -2,7 +2,6 @@ import config from '../config/config'
 import Registry from '../classes/contracts/Registry'
 import DwellerContract from '../classes/contracts/DwellerContract'
 import IDweller from '../interfaces/IDweller'
-import { ethers } from 'ethers'
 
 /**
  * Class representing a caching helper.
@@ -23,7 +22,8 @@ export default class DwellerCachingHelper {
   constructor (ethereum: any, registryAddress: string, expiry: number = 86000) {
     this.ethereum = ethereum
     this.expiry = expiry
-    const localCache = localStorage.getItem('vault74.dwellerCache') || false
+    const localCache =
+      localStorage.getItem(config.cache.dwellerCacheKey) || false
     this.cache = localCache ? JSON.parse(localCache) : {}
     this.registryAddress = registryAddress
   }
@@ -49,13 +49,13 @@ export default class DwellerCachingHelper {
    * @returns the dweller from the local cache, or on chain
    */
   async getDweller (address: string) {
-    let dweller = this.getDwellerFromCache(address)
-    if (dweller) {
-      this.updateDweller(address)
+    const dweller = this.getDwellerFromCache(address)
+
+    if (dweller?.expiry > Date.now()) {
       return dweller
     }
-    dweller = await this.updateDweller(address)
-    return dweller
+
+    return this.updateDweller(address)
   }
 
   /** @function
@@ -80,14 +80,22 @@ export default class DwellerCachingHelper {
       dwellerContractAddress
     )
 
-    const dwellerName = await dwellerContract.getDwellerName()
-    const dwellerPhoto = await dwellerContract.getPhoto()
+    const dwellerData = await dwellerContract.getDweller()
+
+    const {
+      name_: dwellerName,
+      photoHash_: dwellerPhoto,
+      pubkey_: dwellerPubkey
+    } = dwellerData.dweller
+
+    // TODO: Update the contract to get the status within the same call
     const dwellerStatus = await dwellerContract.getStatus()
 
     const dweller = {
-      name: ethers.utils.parseBytes32String(dwellerName),
-      photo: `${config.ipfs.browser}${dwellerPhoto}`,
+      name: dwellerName,
+      photo: dwellerPhoto ? `${config.ipfs.browser}${dwellerPhoto}` : '',
       address,
+      pubkey: dwellerPubkey,
       statusMsg: dwellerStatus,
       expiry: Date.now() + this.expiry
     }
@@ -102,6 +110,9 @@ export default class DwellerCachingHelper {
    * @name updateCache
    */
   updateCache () {
-    localStorage.setItem('vault74.dwellerCache', JSON.stringify(this.cache))
+    localStorage.setItem(
+      config.cache.dwellerCacheKey,
+      JSON.stringify(this.cache)
+    )
   }
 }

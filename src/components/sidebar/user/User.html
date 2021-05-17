@@ -17,8 +17,8 @@
     </span>
   </p>
   <p class="address" v-else>{{friend.statusMsg}}</p>
-  <p id="typing" :class="`online ${(friend.status === 'alive') ? 'true' : ''}`">
-    <i v-if="typing && friend.status === 'alive'" class="fas fa-spinner-third fa-spin"></i>
+  <p id="typing" :class="`online ${isFriendConnected(friend.address) ? 'true' : ''}`">
+    <i v-if="typing && isFriendConnected(friend.address)" class="fas fa-spinner-third fa-spin"></i>
     <i class="fa fa-circle"></i>
   </p>
   <i v-if="hovered" class="fa fa-times"></i>

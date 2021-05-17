@@ -29,10 +29,7 @@ export default class DwellerContract {
    */
   setPhoto (ipfsHash: IIPFSHash, done: CallableFunction) {
     this.contract
-      .setPhoto([
-        ethers.utils.formatBytes32String(ipfsHash.path.substring(0, 23)),
-        ethers.utils.formatBytes32String(ipfsHash.path.substring(23))
-      ])
+      .setPhoto(ipfsHash.path)
       .then(transaction => transaction.wait())
       .then(receipt => done(receipt))
   }
@@ -44,7 +41,7 @@ export default class DwellerContract {
    */
   setUsername (username: string, done: CallableFunction) {
     this.contract
-      .setDwellerName(ethers.utils.formatBytes32String(username))
+      .setDwellerName(username)
       .then(transaction => transaction.wait())
       .then(receipt => done(receipt))
   }
@@ -87,7 +84,7 @@ export default class DwellerContract {
    * @returns owner address of the dweller contract
    */
   async getDwellerAddress () {
-    return this.contract.getDwellerAddress()
+    return this.contract.dweller()
   }
 
   /** @function
@@ -95,7 +92,7 @@ export default class DwellerContract {
    * @returns name of the dweller who owns this contract
    */
   async getDwellerName () {
-    return this.contract.getDwellerName()
+    return this.contract.name()
   }
 
   /** @function
@@ -111,14 +108,14 @@ export default class DwellerContract {
    * @returns hash of the picture
    */
   async getPhoto () {
-    const photo = await this.contract.getPhoto()
-    const sliced = photo.slice(2)
-    const firstHalf = sliced.substr(0, 64)
-    const secondHalf = sliced.substr(64, 128)
+    return this.contract.photoHash()
+  }
 
-    return (
-      ethers.utils.parseBytes32String(`0x${firstHalf}`) +
-      ethers.utils.parseBytes32String(`0x${secondHalf}`)
-    )
+  /** @function
+   * @name getPubkey
+   * @returns the ethereum public key
+   */
+  async getPubkey () {
+    return this.contract.pubkey()
   }
 }

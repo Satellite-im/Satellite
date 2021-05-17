@@ -71,7 +71,7 @@ export default class Ethereum {
    * been initialized
    */
   isInitialized () {
-    return this.isInitialized
+    return this.initialized
   }
 
   /**

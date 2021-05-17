@@ -326,10 +326,6 @@ export default class WebRTC {
       const peer = this.connectedPeers[identifier]
 
       peer.send(JSON.stringify(data))
-    } else {
-      console.warn(
-        `Impossible to send p2p message to ${address}. Peer not connected`
-      )
     }
   }
 

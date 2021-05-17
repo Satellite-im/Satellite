@@ -145,7 +145,6 @@ export default {
 
       this.registry.createDwellerId(
         this.$store.state.username,
-        this.$store.state.activeAccount,
         transactionHash => {
           this.transactionHash = transactionHash
         },

@@ -5,7 +5,6 @@ import Signal from '../Signal'
 
 import { utils, Wallet } from 'ethers'
 import { SigningKey } from 'ethers/lib/utils'
-import { Where } from '@textile/threads-client'
 
 interface IMessage {
   _id: string

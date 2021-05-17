@@ -63,6 +63,9 @@ export default {
       if (this.isMobile()) {
         this.showOptions = true
       }
+    },
+    isFriendConnected (address) {
+      return Boolean(this.$store.state.connectedPeers[address])
     }
   }
 }

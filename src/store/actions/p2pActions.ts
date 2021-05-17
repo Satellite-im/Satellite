@@ -1,7 +1,8 @@
-import ThreadID from '@textile/threads-id'
-import dayjs from 'dayjs'
-
 export default {
+  /**
+   * @description Initializes the p2p connection and all the
+   * needed listeners
+   */
   async initP2P ({ commit, dispatch, state }) {
     // @ts-ignore
     const WebRTC = this.$app.$WebRTC
@@ -12,7 +13,7 @@ export default {
 
     WebRTC.subscribe(
       (event: string, identifier: string, { type, data }) => {
-        dispatch('setFriendStatus', { address: identifier, status: 'alive' })
+        dispatch('setFriendStatus', { address: identifier, connected: true })
       },
       ['connect']
     )
@@ -73,12 +74,14 @@ export default {
 
     WebRTC.subscribe(
       (event, identifier, message) => {
-        dispatch('setFriendStatus', { address: identifier, status: 'dead' })
+        dispatch('setFriendStatus', { address: identifier, connected: false })
       },
       ['disconnect']
     )
   },
-
+  /**
+   * @description Tries to initiate a p2p connection to a given set of friends
+   */
   async tryConnectToFriends ({ dispatch }, { friends }) {
     // @ts-ignore
     const WebRTC = this.$app.$WebRTC
@@ -89,7 +92,9 @@ export default {
       }
     })
   },
-
+  /**
+   * @description Tries to initiate a p2p connection to a given friend
+   */
   async initiateConnection ({}, { friend }) {
     // @ts-ignore
     const WebRTC = this.$app.$WebRTC
@@ -104,7 +109,9 @@ export default {
     // Initiate the P2P connection using the shared secret
     await WebRTC.initiateConnection(friend.address, secret)
   },
-
+  /**
+   * @description Try to call a given friend
+   */
   async call ({ commit, dispatch }, { friendAddress, stream }) {
     // @ts-ignore
     const WebRTC = this.$app.$WebRTC
@@ -124,7 +131,9 @@ export default {
     commit('addActiveCall', friendAddress)
     dispatch('sendMessage', { data: Date.now(), type: 'call' })
   },
-
+  /**
+   * @description Allow to answer to an incoming call from a friend
+   */
   async answerCall ({ commit, dispatch }, { friend, stream }) {
     // @ts-ignore
     const WebRTC = this.$app.$WebRTC
@@ -147,8 +156,10 @@ export default {
     commit('addActiveCall', friend.address)
     dispatch('setActiveChat', { friendAddress: friend.address })
   },
-
-  async hangupCall ({ commit, dispatch }, { friendAddress }) {
+  /**
+   * @description Allows to hang up a call even if it incoming or active
+   */
+  async hangupCall ({ commit }, { friendAddress }) {
     // @ts-ignore
     const WebRTC = this.$app.$WebRTC
 

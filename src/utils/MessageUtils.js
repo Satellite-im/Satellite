@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid'
+
 const datesAreOnSameDay = (first, second) =>
   first.getFullYear() === second.getFullYear() &&
   first.getMonth() === second.getMonth() &&
@@ -29,7 +31,7 @@ export default {
           {
             type: 'day-break',
             date: message.at,
-            id: Date.now()
+            id: uuidv4()
           }
         ])
       } else if (lastMessageAt && message.at - lastMessageAt > 120000) {

@@ -143,18 +143,21 @@ export default {
     },
     startTyping () {
       if (!this.typing) {
-        this.typing = true;
+        this.typing = true
+        this.$WebRTC.send(this.$store.state.activeChat, {
+          type: 'typing-notice',
+          data: true
+        })
 
-        this.$WebRTC.send(this.$store.state.activeChat, {type: 'typing-notice', data: true})
-        // const WebRTCUser = this.$WebRTC.find(this.$store.state.activeChat);
-        // if (WebRTCUser && WebRTCUser.isAlive) {
-        //   WebRTCUser.send('typing-notice', true);
-        // }
+        this.$store.dispatch('subscribeToSentbox')
       }
     },
-    stopTyping() {
-      this.typing = false;
-      this.$WebRTC.send(this.$store.state.activeChat, {type: 'typing-notice', data: false})
+    stopTyping () {
+      this.typing = false
+      this.$WebRTC.send(this.$store.state.activeChat, {
+        type: 'typing-notice',
+        data: false
+      })
     },
     // eslint-disable-next-line
     isTyping: debounce(function (e) {

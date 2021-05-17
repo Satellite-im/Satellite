@@ -2,6 +2,8 @@ export default {
   async startup ({ dispatch, state, commit }) {
     // First load wallet and connect
     if (state.mnemonic) {
+      //@ts-ignore
+      const database = this.$app.$database
       // @ts-ignore
       const ethereum = this.$app.$ethereum
       // @ts-ignore
@@ -14,10 +16,10 @@ export default {
         crypto.init(ethereum.wallet)
       }
 
-      const { client } = await dispatch('initDatabase')
+      await dispatch('initDatabase')
 
       // Initialize p2p connection
-      await dispatch('initP2P', { client })
+      await dispatch('initP2P')
 
       // Dispatch a new action to fetch friends
       await dispatch('fetchFriends', state.activeAccount)
@@ -32,12 +34,14 @@ export default {
       dispatch('startFriendsListeners')
 
       commit('ICEConnected', true)
+
+      dispatch('subscribeToMailbox')
     }
   },
   async setActiveChat ({ commit, state, dispatch }, { friendAddress }) {
     commit('activeChat', friendAddress)
 
-    dispatch('fetchMessages', { address: friendAddress })
+    dispatch('fetchMailbox', { address: friendAddress })
 
     // @ts-ignore
     const WebRTC = this.$app.$WebRTC

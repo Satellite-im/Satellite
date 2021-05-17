@@ -1,16 +1,16 @@
-import createPersistedState from 'vuex-persistedstate';
-import { defaultState } from './createState';
+import createPersistedState from 'vuex-persistedstate'
+import { defaultState } from './createState'
 
 export const cookieStorage = {
   getItem: (key: string) => localStorage.getItem(key),
   setItem: (key: string, value: any) => {
-    localStorage[key] = value;
+    localStorage[key] = value
   },
-  removeItem: (key: string) => delete localStorage[key],
-};
+  removeItem: (key: string) => delete localStorage[key]
+}
 
 interface IBlacklist {
-  [key: string]: boolean;
+  [key: string]: boolean
 }
 
 // Each state in this list will not be
@@ -23,6 +23,7 @@ const blacklist: IBlacklist = {
   activeCaller: true,
   starting: true,
   friends: true,
+  connectedPeers: true,
   activeMediaStreamPeer: true,
   pendingMediaStream: true,
   typingUsers: true,
@@ -38,18 +39,19 @@ const blacklist: IBlacklist = {
   ICEConnected: true,
   activeCalls: true,
   incomingCall: true,
-};
+  messagesLimit: true
+}
 
-const persistedPaths = Object.keys(defaultState).filter(key => !blacklist[key]);
+const persistedPaths = Object.keys(defaultState).filter(key => !blacklist[key])
 
 export const persistedStateConfig = {
   key: '_vuex',
-  filter({ type }) {
+  filter ({ type }) {
     // Don't store route state in cookie
-    return !type.startsWith('route/');
+    return !type.startsWith('route/')
   },
   paths: persistedPaths,
-  storage: cookieStorage,
-};
+  storage: cookieStorage
+}
 
-export default createPersistedState(persistedStateConfig);
+export default createPersistedState(persistedStateConfig)

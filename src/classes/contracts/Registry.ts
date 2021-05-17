@@ -22,20 +22,18 @@ export default class Vault74Registry {
 
   /** @function
    * @name createDwellerId
-   * @argument _username username to set for the inital vaule on contract
-   * @argument account account to send the transaction from
+   * @argument username username to set for the inital vaule on contract
    * @argument tx callback executed on first transaction
    * @argument done callback executed on first confirmation
    */
   createDwellerId (
-    _username: string,
-    account: string,
+    username: string,
     tx: CallableFunction,
     done: CallableFunction
   ) {
-    const username = ethers.utils.formatBytes32String(_username)
+    const publicKey = this.ethereum.getSharablePublicKey()
     this.contract
-      .createDweller(username)
+      .createDweller(username, publicKey)
       .then(transaction => {
         tx(transaction)
         return transaction.wait()

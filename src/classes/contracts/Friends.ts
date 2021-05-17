@@ -1,4 +1,3 @@
-import { ethers } from 'ethers'
 import Ethereum from '../../classes/Ethereum'
 import DwellerCachingHelper from '../../classes/DwellerCachingHelper'
 import config from '../../config/config'
@@ -47,44 +46,14 @@ export default class Friends {
   }
 
   /** @function
-   * @name getRequest
-   * @argument account Address to get friend requests from
-   * @returns friend request object
-   */
-  async getRequest (id: number) {
-    return this.contract.getRequest(id)
-  }
-
-  /** @function
-   * @name parseRequest
-   * @argument request request object
-   * @returns friend request object
-   */
-  async parseRequest (request: any) {
-    return {
-      id: request.id.toString(),
-      active: request.active,
-      accepted: request.accepted,
-      reciever: await this.dwellerCache.getDweller(request.reciver),
-      sender: await this.dwellerCache.getDweller(request.sender),
-      threadHash: `${ethers.utils.parseBytes32String(
-        request.threadHash1
-      )}${ethers.utils.parseBytes32String(request.threadHash2)}`
-    }
-  }
-
-  /** @function
    * @name parseFriend
    * @argument account request array to parse to request object
    * @returns friend request object
    */
-  async parseFriend (fr: any) {
+  async parseFriend (friend: any) {
     return {
-      id: fr.address,
-      threadHash: `${ethers.utils.parseBytes32String(
-        fr.threadHash1
-      )}${ethers.utils.parseBytes32String(fr.threadHash2)}`,
-      pubkey: fr.pubkey
+      id: friend.address,
+      encryptedKey: friend.encryptedKey
     }
   }
 
@@ -99,11 +68,12 @@ export default class Friends {
   /** @function
    * @name makeRequest
    * @argument to account to send the request to
+   * @argument encryptedKey encrypted Textile public key
    * @returns transaction hash
    */
-  async makeRequest (to: string): Promise<any> {
+  async makeRequest (to: string, encryptedKey: string): Promise<any> {
     return this.contract
-      .makeRequest(to, this.ethereum.getSharablePublicKey(), {
+      .makeRequest(to, encryptedKey, {
         gasLimit: 300000
       })
       .then(tx => tx.wait())
@@ -112,19 +82,11 @@ export default class Friends {
   /** @function
    * @name acceptRequest
    * @argument to address of the user that sent the friend request
+   * @argument encryptedKey encrypted Textile public key
    * @returns transaction receipt
    */
-  async acceptRequest (to: string, hash: string): Promise<any> {
-    return this.contract
-      .acceptRequest(
-        to,
-        [
-          ethers.utils.formatBytes32String(hash.substring(0, 28)),
-          ethers.utils.formatBytes32String(hash.substring(28))
-        ],
-        this.ethereum.getSharablePublicKey()
-      )
-      .then(tx => tx.wait())
+  async acceptRequest (to: string, encryptedKey: string): Promise<any> {
+    return this.contract.acceptRequest(to, encryptedKey).then(tx => tx.wait())
   }
 
   /** @function

@@ -6,8 +6,8 @@ import CircleIcon from '@/components/common/CircleIcon'
 import DwellerCachingHelper from '@/classes/DwellerCachingHelper.ts'
 
 import MobileUtils from '@/utils/Mobile.ts'
-import * as dayjs from 'dayjs';
-import * as localizedFormat from 'dayjs/plugin/localizedFormat';
+import * as dayjs from 'dayjs'
+import * as localizedFormat from 'dayjs/plugin/localizedFormat'
 
 dayjs.extend(localizedFormat)
 
@@ -31,14 +31,14 @@ export default {
      * @name formattedDate
      * @argument timestamp unicode timestamp to format
      */
-    formattedDate(timestamp) {
-      return dayjs(timestamp).format('LT');
+    formattedDate (timestamp) {
+      return dayjs(timestamp).format('LT')
     },
     /** @method
      * Returns the last recorded message from a user
      * @returns last message decoded
      */
-    getLastMessage() {
+    getLastMessage () {
       return decodeURIComponent(
         this.$store.state.lastMessages[this.friend.address].data
       )
@@ -58,7 +58,10 @@ export default {
       })
     },
     // Returns if user device is mobile
-    isMobile: MobileUtils.isMobile
+    isMobile: MobileUtils.isMobile,
+    isFriendConnected (address) {
+      return Boolean(this.$store.state.connectedPeers[address])
+    }
   },
   async mounted () {
     const dwellerCachingHelper = new DwellerCachingHelper(

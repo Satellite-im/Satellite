@@ -22,7 +22,7 @@
       <div class="column pfp-column">
         <CircleIcon :image="friend.photo" :address="friend.address" />
         <span class="online-wrapper" v-if="friend.status">
-          <p :class="`online ${friend.status == 'alive' ? 'true' : ''}`">
+          <p :class="`online ${isFriendConnected(friend.address) ? 'true' : ''}`">
             <i class="fa fa-circle"></i>
           </p>
         </span>
